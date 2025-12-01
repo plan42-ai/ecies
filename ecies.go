@@ -79,6 +79,8 @@ func (ws *WrappedSecret) UnmarshalJSON(bytes []byte) error {
 	return nil
 }
 
+const EciesCofactorVariableIVX963SHA256AESGCM = "ECIES.Cofactor.VariableIV.X963.SHA256.AESGCM"
+
 // EncryptionAlgorithm returns the name of the encryption algorithm used by this WrappedSecret.
 func (ws *WrappedSecret) EncryptionAlgorithm() string {
 	return "ECIES.Cofactor.VariableIV.X963.SHA256.AESGCM"
@@ -99,6 +101,9 @@ func (ws *WrappedSecret) EncryptionAlgorithm() string {
 //
 // Only the P256 curve and SHA256 hash are supported.
 func Wrap(data []byte, target *ecdsa.PublicKey) (*WrappedSecret, error) {
+	if target.Curve.Params().Name != elliptic.P256().Params().Name {
+		return nil, errors.New("unsupported curve")
+	}
 	ephemeralPrivKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
 		return nil, err
@@ -138,6 +143,12 @@ func Wrap(data []byte, target *ecdsa.PublicKey) (*WrappedSecret, error) {
 
 // Unwrap decrypts a WrappedSecret instance.
 func Unwrap(w *WrappedSecret, privKey *ecdsa.PrivateKey) ([]byte, error) {
+	if privKey.Curve.Params().Name != elliptic.P256().Params().Name {
+		return nil, errors.New("unsupported curve")
+	}
+	if w.EphemeralPublicKey.Curve.Params().Name != elliptic.P256().Params().Name {
+		return nil, errors.New("unsupported curve")
+	}
 	privKeyECDH, err := privKey.ECDH()
 	if err != nil {
 		return nil, err
@@ -214,7 +225,7 @@ func PubKeyToPem(key crypto.PublicKey) (string, error) {
 	return buf.String(), nil
 }
 
-// PubKeyToPem decodes a PEM encoded public key into a crypto.PublicKey.
+// PemToPubKey decodes a PEM encoded public key into a crypto.PublicKey.
 func PemToPubKey(key string) (crypto.PublicKey, error) {
 	block, _ := pem.Decode([]byte(key))
 	if block == nil {
