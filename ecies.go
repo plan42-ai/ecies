@@ -10,6 +10,7 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/binary"
 	"encoding/json"
 	"encoding/pem"
@@ -203,6 +204,15 @@ func ToX963(pubKey *ecdsa.PublicKey) []byte {
 	pubKey.X.FillBytes(ret[1:33])
 	pubKey.Y.FillBytes(ret[33:65])
 	return ret
+}
+
+func KeyHash(key crypto.PublicKey) (string, error) {
+	der, err := x509.MarshalPKIXPublicKey(key)
+	if err != nil {
+		return "", err
+	}
+	keyHash := sha256.Sum256(der)
+	return base64.RawURLEncoding.EncodeToString(keyHash[:]), nil
 }
 
 // PubKeyToPem converts a crypto.PublicKey to a PEM encoded string.
