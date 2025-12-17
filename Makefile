@@ -11,7 +11,7 @@ ifdef GITHUB_RUN_NUMBER
     endif
 else
     PROJECT_PATCH_VERSION := $(USER).test
-    PROJECT_ADDITIONAL_VERSION := -$(shell TZ=America/Los_Angeles date '+%Y-%%m-%%d.%%s')S
+    PROJECT_ADDITIONAL_VERSION := -$(shell TZ=America/Los_Angeles date '+%Y-%m-%d.%s')S
 endif
 
 VERSION = "$(PROJECT_MAJOR_VERSION).$(PROJECT_MINOR_VERSION).$(PROJECT_PATCH_VERSION)$(PROJECT_ADDITIONAL_VERSION)"
