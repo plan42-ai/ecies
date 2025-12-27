@@ -11,7 +11,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/debugging-sucks/ecies"
+	"github.com/plan42-ai/ecies"
 	"github.com/stretchr/testify/require"
 )
 

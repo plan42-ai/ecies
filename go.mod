@@ -1,4 +1,4 @@
-module github.com/debugging-sucks/ecies
+module github.com/plan42-ai/ecies
 
 go 1.24.3
 
